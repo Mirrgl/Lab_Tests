@@ -1,0 +1,59 @@
+@startuml DoubleList
+
+class DoubleList {
+  - head: DFNode*
+  - tail: DFNode*
+  - length: size_t
+  --
+  - validateIndex(index: int, allowEnd: bool = false): void
+  - getNodeAt(index: int): DFNode*
+  --
+  + DoubleList()
+  + DoubleList(list: initializer_list<string>)
+  + ~DoubleList()
+  + addAfter(key: const string&, index: int): void
+  + addBefore(key: const string&, index: int): void
+  + addHead(key: const string&): void
+  + addTail(key: const string&): void
+  + deleteAt(index: int): void
+  + deleteHead(): void
+  + deleteTail(): void
+  + deleteByValue(key: const string&): void
+  + getElement(index: int): string
+  + popElement(index: int): string
+  + findByValue(key: const string&): DFNode*
+  + isEmpty(): bool
+  + getLength(): size_t
+  + writeBinary(filename: const string&): void
+  + readBinary(filename: const string&): void
+  + writeText(filename: const string&): void
+  + readText(filename: const string&): void
+  + print(): void
+}
+
+struct DFNode {
+  + key: string
+  + next: DFNode* = nullptr
+  + prev: DFNode* = nullptr
+}
+
+DoubleList "1" *-- "*" DFNode : contains
+DFNode "0..1" -right-o "1" DFNode : next
+DFNode "0..1" -left-o "1" DFNode : prev
+
+note right of DoubleList
+  Двусвязный список строк
+  - Быстрый доступ с обоих концов (head/tail)
+  - Оптимизированный доступ по индексу
+  - Поддержка сериализации
+  - Инициализация через initializer_list
+end note
+
+note bottom of DFNode
+  Узел двусвязного списка
+  - key: строковое значение
+  - next: указатель на следующий узел
+  - prev: указатель на предыдущий узел
+end note
+
+@enduml

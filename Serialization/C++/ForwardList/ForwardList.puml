@@ -1,0 +1,58 @@
+@startuml ForwardList
+
+class ForwardList {
+  - head: FWNode* = nullptr
+  - tail: FWNode* = nullptr
+  - size: size_t = 0
+  --
+  - validatePosition(position: int, allowEnd: bool = false): void
+  - getNodeAt(position: int): FWNode*
+  --
+  + ForwardList()
+  + ForwardList(list: initializer_list<string>)
+  + ~ForwardList()
+  + pushBack(key: const string&): void
+  + pushFront(key: const string&): void
+  + insertBefore(key: const string&, position: int): void
+  + insertAfter(key: const string&, position: int): void
+  + popFront(): void
+  + popBack(): void
+  + removeAfter(prevNode: FWNode*): void
+  + removeByValue(value: const string&): bool
+  + front(): string
+  + back(): string
+  + getAt(index: size_t): string
+  + findByValue(value: const string&): FWNode*
+  + isEmpty(): bool
+  + getSize(): size_t
+  + writeBinary(filename: const string&): void
+  + readBinary(filename: const string&): void
+  + writeText(filename: const string&): void
+  + readText(filename: const string&): void
+  + print(): void
+}
+
+struct FWNode {
+  + key: string
+  + next: FWNode* = nullptr
+}
+
+ForwardList "1" *-- "*" FWNode : contains
+FWNode "1" --> "0..1" FWNode : next
+
+note right of ForwardList
+  Односвязный список строк
+  - Быстрый доступ с начала (head)
+  - Поддержка хвоста (tail) для быстрого добавления в конец
+  - Запрещено копирование (delete конструктор копирования)
+  - Поддержка сериализации
+end note
+
+note bottom of FWNode
+  Узел односвязного списка
+  - key: строковое значение
+  - next: указатель на следующий узел
+  - Только прямое направление
+end note
+
+@enduml

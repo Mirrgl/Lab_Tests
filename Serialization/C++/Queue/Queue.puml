@@ -1,0 +1,50 @@
+@startuml Queue
+
+class Queue {
+  - head: QNode*
+  - tail: QNode*
+  - size: size_t
+  - MAX_SIZE: size_t = 1000
+  --
+  + Queue(initSize: size_t)
+  + Queue(list: initializer_list<string>)
+  + ~Queue()
+  --
+  + enqueue(value: const string&): void
+  + dequeue(): string
+  + del(key: const string&): void
+  + getSize(): size_t
+  + getHead(): QNode*
+  + writeBinary(filename: const string&): void
+  + readBinary(filename: const string&): void
+  + writeText(filename: const string&): void
+  + readText(filename: const string&): void
+  + print(): void
+}
+
+struct QNode {
+  + data: string
+  + next: QNode*
+  + prev: QNode*
+}
+
+Queue "1" *-- "*" QNode : contains
+QNode "0..1" --o "0..1" QNode : next/prev
+
+note right of Queue
+  Двунаправленная очередь
+  - Реализация на двусвязном списке
+  - Ограничение размера: MAX_SIZE = 1000
+  - FIFO (First-In-First-Out)
+  - Поддерживает удаление по значению
+  - Сериализация в бинарный и текстовый форматы
+end note
+
+note bottom of QNode
+  Узел двусвязного списка
+  - data: строковые данные
+  - next: указатель на следующий узел
+  - prev: указатель на предыдущий узел
+end note
+
+@enduml

@@ -1,0 +1,1 @@
+genhtml coverage.info --ignore-errors inconsistent --ignore-errors category --output-directory coverage_html

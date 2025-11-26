@@ -1,0 +1,62 @@
+@startuml ChainMapBucket
+
+class ChainMap {
+  - table: Bucket*
+  - capacity: size_t
+  - size: size_t
+  --
+  - hashFunction(key: const string&): size_t
+  - rehash(): void
+  --
+  + ChainMap(initial_capacity: size_t)
+  + ~ChainMap()
+  + add(key: const string&, data: int): void
+  + del(key: const string&): void
+  + isContain(key: const string&): bool
+  + find(key: const string&): int
+  + getAllKeys(result: ChainMap&): void
+  + getAllKeysAsString(): string
+  + printContents(): void
+  + writeBinary(filename: const string&): void
+  + readBinary(filename: const string&): void
+  + writeText(filename: const string&): void
+  + readText(filename: const string&): void
+}
+
+struct Bucket {
+  + head: ChainNode*
+  + Bucket()
+}
+
+struct ChainNode {
+  + key: string
+  + data: int
+  + next: ChainNode*
+  + ChainNode(k: const string&, d: int)
+}
+
+ChainMap "1" *-- "*" Bucket : contains
+Bucket "1" *-- "*" ChainNode : contains
+ChainNode "0..1" --o "*" ChainNode : "\nnext"
+
+note right of ChainMap
+  Хеш-таблица с цепочками коллизий
+  - Автоматическое рехеширование при 75% заполнении
+  - Цепочки для разрешения коллизий
+  - Поддержка сериализации
+end note
+
+note right of Bucket
+  Бакет хеш-таблицы
+  - Содержит указатель на голову цепочки
+  - Каждый бакет - отдельная цепочка
+end note
+
+note right of ChainNode
+  Узел цепочки
+  - key: строковый ключ
+  - data: целочисленное значение
+  - next: указатель на следующий узел
+end note
+
+@enduml

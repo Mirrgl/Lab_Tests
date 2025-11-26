@@ -1,0 +1,59 @@
+@startuml RBTree
+
+class RBTree {
+  - root: RBTNode*
+  --
+  - leftRotate(x: RBTNode*): void
+  - rightRotate(y: RBTNode*): void
+  - fixViolation(z: RBTNode*): void
+  - findNodePosition(currentNode: RBTNode*, key: int): RBTNode*
+  - transplant(u: RBTNode*, v: RBTNode*): void
+  - fixDelete(x: RBTNode*, xParent: RBTNode*): void
+  - findNode(key: int): RBTNode*
+  - deleteBRTreeNode(currentNode: RBTNode*): void
+  - writeBinaryNode(file: ofstream&, node: RBTNode*): void
+  - readBinaryNode(file: ifstream&, node: RBTNode*&, parent: RBTNode*): void
+  - writeTextNode(file: ofstream&, node: RBTNode*): void
+  - readTextNode(file: ifstream&, node: RBTNode*&, parent: RBTNode*): void
+  - countNodes(node: RBTNode*): int
+  - printInOrder(node: RBTNode*): void
+  --
+  + RBTree()
+  + ~RBTree()
+  + insert(key: int): void
+  + del(key: int): void
+  + get(key: int): int
+  + writeBinary(filename: const string&): void
+  + readBinary(filename: const string&): void
+  + writeText(filename: const string&): void
+  + readText(filename: const string&): void
+  + print(): void
+}
+
+struct RBTNode {
+  + key: int
+  + right: RBTNode*
+  + left: RBTNode*
+  + parent: RBTNode*
+  + color: bool
+}
+
+RBTree "1" *-- "*" RBTNode : contains
+RBTNode "0..1" --o "    0..2" RBTNode : parent/children
+
+note top of RBTree
+  Красно-черное дерево
+  - Самобалансирующееся бинарное дерево поиска
+  - Сложность операций: O(log n)
+  - Поддерживает вставку, удаление, поиск
+  - Сериализация в бинарный и текстовый форматы
+end note
+
+note left of RBTNode
+  Узел красно-черного дерева
+  - color: 0=черный, 1=красный
+  - parent: указатель на родителя
+  - left/right: указатели на детей
+end note
+
+@enduml

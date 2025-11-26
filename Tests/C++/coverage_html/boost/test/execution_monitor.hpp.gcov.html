@@ -1,0 +1,660 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - boost/test/execution_monitor.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../index.html" title="Click to go to top-level">top level</a> - <a href="index.html" title="Click to go to directory boost/test">boost/test</a> - execution_monitor.hpp<span style="font-size: 80%;"> (source / <a href="execution_monitor.hpp.func-c.html" title="Click to go to function table">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">0</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2025-11-26 15:00:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">0</td>
+          </tr>
+                  <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : //  (C) Copyright Gennadiy Rozental 2001.</span>
+<span id="L2"><span class="lineNum">       2</span>              : //  (C) Copyright Beman Dawes 2001.</span>
+<span id="L3"><span class="lineNum">       3</span>              : //  Distributed under the Boost Software License, Version 1.0.</span>
+<span id="L4"><span class="lineNum">       4</span>              : //  (See accompanying file LICENSE_1_0.txt or copy at</span>
+<span id="L5"><span class="lineNum">       5</span>              : //  http://www.boost.org/LICENSE_1_0.txt)</span>
+<span id="L6"><span class="lineNum">       6</span>              : </span>
+<span id="L7"><span class="lineNum">       7</span>              : //  See http://www.boost.org/libs/test for the library home page.</span>
+<span id="L8"><span class="lineNum">       8</span>              : //</span>
+<span id="L9"><span class="lineNum">       9</span>              : //!@file</span>
+<span id="L10"><span class="lineNum">      10</span>              : //!@brief Defines public interface of the Execution Monitor and related classes</span>
+<span id="L11"><span class="lineNum">      11</span>              : // ***************************************************************************</span>
+<span id="L12"><span class="lineNum">      12</span>              : </span>
+<span id="L13"><span class="lineNum">      13</span>              : #ifndef BOOST_TEST_EXECUTION_MONITOR_HPP_071894GER</span>
+<span id="L14"><span class="lineNum">      14</span>              : #define BOOST_TEST_EXECUTION_MONITOR_HPP_071894GER</span>
+<span id="L15"><span class="lineNum">      15</span>              : </span>
+<span id="L16"><span class="lineNum">      16</span>              : // Boost.Test</span>
+<span id="L17"><span class="lineNum">      17</span>              : #include &lt;boost/test/detail/global_typedef.hpp&gt;</span>
+<span id="L18"><span class="lineNum">      18</span>              : #include &lt;boost/test/detail/fwd_decl.hpp&gt;</span>
+<span id="L19"><span class="lineNum">      19</span>              : #include &lt;boost/test/detail/throw_exception.hpp&gt;</span>
+<span id="L20"><span class="lineNum">      20</span>              : </span>
+<span id="L21"><span class="lineNum">      21</span>              : #include &lt;boost/test/utils/class_properties.hpp&gt;</span>
+<span id="L22"><span class="lineNum">      22</span>              : </span>
+<span id="L23"><span class="lineNum">      23</span>              : // Boost</span>
+<span id="L24"><span class="lineNum">      24</span>              : #include &lt;boost/shared_ptr.hpp&gt;</span>
+<span id="L25"><span class="lineNum">      25</span>              : #include &lt;boost/scoped_array.hpp&gt;</span>
+<span id="L26"><span class="lineNum">      26</span>              : #include &lt;boost/type.hpp&gt;</span>
+<span id="L27"><span class="lineNum">      27</span>              : #include &lt;boost/cstdlib.hpp&gt;</span>
+<span id="L28"><span class="lineNum">      28</span>              : #include &lt;boost/function/function0.hpp&gt;</span>
+<span id="L29"><span class="lineNum">      29</span>              : </span>
+<span id="L30"><span class="lineNum">      30</span>              : #include &lt;boost/test/detail/suppress_warnings.hpp&gt;</span>
+<span id="L31"><span class="lineNum">      31</span>              : </span>
+<span id="L32"><span class="lineNum">      32</span>              : #ifdef BOOST_SEH_BASED_SIGNAL_HANDLING</span>
+<span id="L33"><span class="lineNum">      33</span>              : </span>
+<span id="L34"><span class="lineNum">      34</span>              : // for the FP constants and control routines</span>
+<span id="L35"><span class="lineNum">      35</span>              : #include &lt;float.h&gt;</span>
+<span id="L36"><span class="lineNum">      36</span>              : </span>
+<span id="L37"><span class="lineNum">      37</span>              : #ifndef EM_INVALID</span>
+<span id="L38"><span class="lineNum">      38</span>              : #define EM_INVALID _EM_INVALID</span>
+<span id="L39"><span class="lineNum">      39</span>              : #endif</span>
+<span id="L40"><span class="lineNum">      40</span>              : </span>
+<span id="L41"><span class="lineNum">      41</span>              : #ifndef EM_DENORMAL</span>
+<span id="L42"><span class="lineNum">      42</span>              : #define EM_DENORMAL _EM_DENORMAL</span>
+<span id="L43"><span class="lineNum">      43</span>              : #endif</span>
+<span id="L44"><span class="lineNum">      44</span>              : </span>
+<span id="L45"><span class="lineNum">      45</span>              : #ifndef EM_ZERODIVIDE</span>
+<span id="L46"><span class="lineNum">      46</span>              : #define EM_ZERODIVIDE _EM_ZERODIVIDE</span>
+<span id="L47"><span class="lineNum">      47</span>              : #endif</span>
+<span id="L48"><span class="lineNum">      48</span>              : </span>
+<span id="L49"><span class="lineNum">      49</span>              : #ifndef EM_OVERFLOW</span>
+<span id="L50"><span class="lineNum">      50</span>              : #define EM_OVERFLOW _EM_OVERFLOW</span>
+<span id="L51"><span class="lineNum">      51</span>              : #endif</span>
+<span id="L52"><span class="lineNum">      52</span>              : </span>
+<span id="L53"><span class="lineNum">      53</span>              : #ifndef EM_UNDERFLOW</span>
+<span id="L54"><span class="lineNum">      54</span>              : #define EM_UNDERFLOW _EM_UNDERFLOW</span>
+<span id="L55"><span class="lineNum">      55</span>              : #endif</span>
+<span id="L56"><span class="lineNum">      56</span>              : </span>
+<span id="L57"><span class="lineNum">      57</span>              : #ifndef MCW_EM</span>
+<span id="L58"><span class="lineNum">      58</span>              : #define MCW_EM _MCW_EM</span>
+<span id="L59"><span class="lineNum">      59</span>              : #endif</span>
+<span id="L60"><span class="lineNum">      60</span>              : </span>
+<span id="L61"><span class="lineNum">      61</span>              : #else // based on ISO C standard</span>
+<span id="L62"><span class="lineNum">      62</span>              : </span>
+<span id="L63"><span class="lineNum">      63</span>              : #if !defined(BOOST_NO_FENV_H)</span>
+<span id="L64"><span class="lineNum">      64</span>              :   #include &lt;boost/detail/fenv.hpp&gt;</span>
+<span id="L65"><span class="lineNum">      65</span>              : #endif</span>
+<span id="L66"><span class="lineNum">      66</span>              : </span>
+<span id="L67"><span class="lineNum">      67</span>              : #endif</span>
+<span id="L68"><span class="lineNum">      68</span>              : </span>
+<span id="L69"><span class="lineNum">      69</span>              : #if defined(BOOST_SEH_BASED_SIGNAL_HANDLING) &amp;&amp; !defined(UNDER_CE)</span>
+<span id="L70"><span class="lineNum">      70</span>              :   //! Indicates tha the floating point exception handling is supported</span>
+<span id="L71"><span class="lineNum">      71</span>              :   //! through SEH</span>
+<span id="L72"><span class="lineNum">      72</span>              :   #define BOOST_TEST_FPE_SUPPORT_WITH_SEH__</span>
+<span id="L73"><span class="lineNum">      73</span>              : #elif !defined(BOOST_SEH_BASED_SIGNAL_HANDLING) &amp;&amp; !defined(UNDER_CE)</span>
+<span id="L74"><span class="lineNum">      74</span>              :   #if !defined(BOOST_NO_FENV_H) &amp;&amp; !defined(BOOST_CLANG) &amp;&amp; \</span>
+<span id="L75"><span class="lineNum">      75</span>              :       defined(__GLIBC__) &amp;&amp; defined(__USE_GNU) &amp;&amp; \</span>
+<span id="L76"><span class="lineNum">      76</span>              :       !(defined(__UCLIBC__) || defined(__nios2__) || defined(__microblaze__))</span>
+<span id="L77"><span class="lineNum">      77</span>              :   //! Indicates that floating point exception handling is supported for the</span>
+<span id="L78"><span class="lineNum">      78</span>              :   //! non SEH version of it, for the GLIBC extensions only</span>
+<span id="L79"><span class="lineNum">      79</span>              :   // see discussions on the related topic: https://svn.boost.org/trac/boost/ticket/11756</span>
+<span id="L80"><span class="lineNum">      80</span>              :   #define BOOST_TEST_FPE_SUPPORT_WITH_GLIBC_EXTENSIONS__</span>
+<span id="L81"><span class="lineNum">      81</span>              :   #endif</span>
+<span id="L82"><span class="lineNum">      82</span>              : #endif</span>
+<span id="L83"><span class="lineNum">      83</span>              : </span>
+<span id="L84"><span class="lineNum">      84</span>              : </span>
+<span id="L85"><span class="lineNum">      85</span>              : // Additional macro documentations not being generated without this hack</span>
+<span id="L86"><span class="lineNum">      86</span>              : #ifdef BOOST_TEST_DOXYGEN_DOC__</span>
+<span id="L87"><span class="lineNum">      87</span>              : </span>
+<span id="L88"><span class="lineNum">      88</span>              : //! Disables the support of the alternative stack</span>
+<span id="L89"><span class="lineNum">      89</span>              : //! during the compilation of the Boost.test framework. This is especially useful</span>
+<span id="L90"><span class="lineNum">      90</span>              : //! in case it is not possible to detect the lack of alternative stack support for</span>
+<span id="L91"><span class="lineNum">      91</span>              : //! your compiler (for instance, ESXi).</span>
+<span id="L92"><span class="lineNum">      92</span>              : #define BOOST_TEST_DISABLE_ALT_STACK</span>
+<span id="L93"><span class="lineNum">      93</span>              : </span>
+<span id="L94"><span class="lineNum">      94</span>              : #endif</span>
+<span id="L95"><span class="lineNum">      95</span>              : </span>
+<span id="L96"><span class="lineNum">      96</span>              : //____________________________________________________________________________//</span>
+<span id="L97"><span class="lineNum">      97</span>              : </span>
+<span id="L98"><span class="lineNum">      98</span>              : namespace boost {</span>
+<span id="L99"><span class="lineNum">      99</span>              : </span>
+<span id="L100"><span class="lineNum">     100</span>              : /// @defgroup ExecutionMonitor Function Execution Monitor</span>
+<span id="L101"><span class="lineNum">     101</span>              : /// @{</span>
+<span id="L102"><span class="lineNum">     102</span>              : /// @section Intro Introduction</span>
+<span id="L103"><span class="lineNum">     103</span>              : /// Sometimes we need to call a function and make sure that no user or system originated exceptions are being thrown by it. Uniform exception reporting</span>
+<span id="L104"><span class="lineNum">     104</span>              : /// is also may be convenient. That's the purpose of the Boost.Test's Execution Monitor.</span>
+<span id="L105"><span class="lineNum">     105</span>              : ///</span>
+<span id="L106"><span class="lineNum">     106</span>              : /// The Execution Monitor is a lower-level component of the Boost Test Library. It is the base for implementing all other Boost.Test components, but also</span>
+<span id="L107"><span class="lineNum">     107</span>              : /// can be used standalone to get controlled execution of error-prone functions with a uniform error notification. The Execution Monitor calls a user-supplied</span>
+<span id="L108"><span class="lineNum">     108</span>              : /// function in a controlled environment, relieving users from messy error detection.</span>
+<span id="L109"><span class="lineNum">     109</span>              : ///</span>
+<span id="L110"><span class="lineNum">     110</span>              : /// The Execution Monitor usage is demonstrated in the example exec_mon_example.</span>
+<span id="L111"><span class="lineNum">     111</span>              : ///</span>
+<span id="L112"><span class="lineNum">     112</span>              : /// @section DesignRationale Design Rationale</span>
+<span id="L113"><span class="lineNum">     113</span>              : ///</span>
+<span id="L114"><span class="lineNum">     114</span>              : /// The Execution Monitor design assumes that it can be used when no (or almost no) memory available. Also the Execution Monitor</span>
+<span id="L115"><span class="lineNum">     115</span>              : /// is intended to be portable to as many platforms as possible.</span>
+<span id="L116"><span class="lineNum">     116</span>              : ///</span>
+<span id="L117"><span class="lineNum">     117</span>              : /// @section UserGuide User's guide</span>
+<span id="L118"><span class="lineNum">     118</span>              : /// The Execution Monitor is designed to solve the problem of executing potentially dangerous function that may result in any number of error conditions,</span>
+<span id="L119"><span class="lineNum">     119</span>              : /// in monitored environment that should prevent any undesirable exceptions to propagate out of function call and produce consistent result report for all outcomes.</span>
+<span id="L120"><span class="lineNum">     120</span>              : /// The Execution Monitor is able to produce informative report for all standard C++ exceptions and intrinsic types. All other exceptions are reported as unknown.</span>
+<span id="L121"><span class="lineNum">     121</span>              : /// If you prefer different message for your exception type or need to perform any action, the Execution Monitor supports custom exception translators.</span>
+<span id="L122"><span class="lineNum">     122</span>              : /// There are several other parameters of the monitored environment can be configured by setting appropriate properties of the Execution Monitor.</span>
+<span id="L123"><span class="lineNum">     123</span>              : ///</span>
+<span id="L124"><span class="lineNum">     124</span>              : /// All symbols in the Execution Monitor implementation are located in the namespace boost. To use the Execution Monitor you need to:</span>
+<span id="L125"><span class="lineNum">     125</span>              : /// -# include @c boost/test/execution_monitor.hpp</span>
+<span id="L126"><span class="lineNum">     126</span>              : /// -# Make an instance of execution_monitor.</span>
+<span id="L127"><span class="lineNum">     127</span>              : /// -# Optionally register custom exception translators for exception classes which require special processing.</span>
+<span id="L128"><span class="lineNum">     128</span>              : ///</span>
+<span id="L129"><span class="lineNum">     129</span>              : /// @subsection FuncExec Monitored function execution</span>
+<span id="L130"><span class="lineNum">     130</span>              : ///</span>
+<span id="L131"><span class="lineNum">     131</span>              : /// The class execution_monitor can monitor functions with the following signatures:</span>
+<span id="L132"><span class="lineNum">     132</span>              : /// - int ()</span>
+<span id="L133"><span class="lineNum">     133</span>              : /// - void ()</span>
+<span id="L134"><span class="lineNum">     134</span>              : ///</span>
+<span id="L135"><span class="lineNum">     135</span>              : /// This function is expected to be self sufficient part of your application. You can't pass any arguments to this function directly. Instead you</span>
+<span id="L136"><span class="lineNum">     136</span>              : /// should bind them into executable nullary function using bind function (either standard or boost variant). Neither you can return any other value,</span>
+<span id="L137"><span class="lineNum">     137</span>              : /// but an integer result code. If necessary you can bind output parameters by reference or use some other more complicated nullary functor, which</span>
+<span id="L138"><span class="lineNum">     138</span>              : /// maintains state. This includes class methods, static class methods etc.</span>
+<span id="L139"><span class="lineNum">     139</span>              : ///</span>
+<span id="L140"><span class="lineNum">     140</span>              : /// To start the monitored function, invoke the method execution_monitor::execute and pass the monitored function as an argument. If the call succeeds,</span>
+<span id="L141"><span class="lineNum">     141</span>              : /// the method returns the result code produced by the monitored function. If any of the following conditions occur:</span>
+<span id="L142"><span class="lineNum">     142</span>              : /// - Uncaught C++ exception</span>
+<span id="L143"><span class="lineNum">     143</span>              : /// - Hardware or software signal, trap, or other exception</span>
+<span id="L144"><span class="lineNum">     144</span>              : /// - Timeout reached</span>
+<span id="L145"><span class="lineNum">     145</span>              : /// - Debug assert event occurred (under Microsoft Visual C++ or compatible compiler)</span>
+<span id="L146"><span class="lineNum">     146</span>              : ///</span>
+<span id="L147"><span class="lineNum">     147</span>              : /// then the method throws the execution_exception. The exception contains unique error_code value identifying the error condition and the detailed message</span>
+<span id="L148"><span class="lineNum">     148</span>              : /// that can be used to report the error.</span>
+<span id="L149"><span class="lineNum">     149</span>              : ///</span>
+<span id="L150"><span class="lineNum">     150</span>              : /// @subsection Reporting Errors reporting and translation</span>
+<span id="L151"><span class="lineNum">     151</span>              : ///</span>
+<span id="L152"><span class="lineNum">     152</span>              : /// If you need to report an error inside monitored function execution you have to throw an exception. Do not use the execution_exception - it's not intended</span>
+<span id="L153"><span class="lineNum">     153</span>              : /// to be used for this purpose. The simplest choice is to use one of the following C++ types as an exception:</span>
+<span id="L154"><span class="lineNum">     154</span>              : /// - C string</span>
+<span id="L155"><span class="lineNum">     155</span>              : /// - std:string</span>
+<span id="L156"><span class="lineNum">     156</span>              : /// - any exception class in std::exception hierarchy</span>
+<span id="L157"><span class="lineNum">     157</span>              : /// - boost::exception</span>
+<span id="L158"><span class="lineNum">     158</span>              : ///</span>
+<span id="L159"><span class="lineNum">     159</span>              : /// execution_monitor will catch and report these types of exceptions. If exception is thrown which is unknown to execution_monitor, it can only</span>
+<span id="L160"><span class="lineNum">     160</span>              : /// report the fact of the exception. So in case if you prefer to use your own exception types or can't govern what exceptions are generated by monitored</span>
+<span id="L161"><span class="lineNum">     161</span>              : /// function and would like to see proper error message in a report, execution_monitor can be configured with custom &quot;translator&quot; routine, which will have</span>
+<span id="L162"><span class="lineNum">     162</span>              : /// a chance to either record the fact of the exception itself or translate it into one of standard exceptions and rethrow (or both). The translator routine</span>
+<span id="L163"><span class="lineNum">     163</span>              : /// is registered per exception type and is invoked when exception of this class (or one inherited from it) is thrown inside monitored routine. You can</span>
+<span id="L164"><span class="lineNum">     164</span>              : /// register as many independent translators as you like. See execution_monitor::register_exception_translator specification for requirements on translator</span>
+<span id="L165"><span class="lineNum">     165</span>              : /// function.</span>
+<span id="L166"><span class="lineNum">     166</span>              : ///</span>
+<span id="L167"><span class="lineNum">     167</span>              : /// Finally, if you need to abort the monitored function execution without reporting any errors, you can throw an exception execution_aborted. As a result</span>
+<span id="L168"><span class="lineNum">     168</span>              : /// the execution is aborted and zero result code is produced by the method execution_monitor::execute.</span>
+<span id="L169"><span class="lineNum">     169</span>              : ///</span>
+<span id="L170"><span class="lineNum">     170</span>              : /// @subsection Parameters Supported parameters</span>
+<span id="L171"><span class="lineNum">     171</span>              : ///</span>
+<span id="L172"><span class="lineNum">     172</span>              : /// The Execution Monitor behavior is configurable through the set of parameters (properties) associated with the instance of the monitor. See execution_monitor</span>
+<span id="L173"><span class="lineNum">     173</span>              : /// specification for a list of supported parameters and their semantic.</span>
+<span id="L174"><span class="lineNum">     174</span>              : </span>
+<span id="L175"><span class="lineNum">     175</span>              : // ************************************************************************** //</span>
+<span id="L176"><span class="lineNum">     176</span>              : // **************        detail::translator_holder_base        ************** //</span>
+<span id="L177"><span class="lineNum">     177</span>              : // ************************************************************************** //</span>
+<span id="L178"><span class="lineNum">     178</span>              : </span>
+<span id="L179"><span class="lineNum">     179</span>              : namespace detail {</span>
+<span id="L180"><span class="lineNum">     180</span>              : </span>
+<span id="L181"><span class="lineNum">     181</span>              : class translator_holder_base;</span>
+<span id="L182"><span class="lineNum">     182</span>              : typedef boost::shared_ptr&lt;translator_holder_base&gt; translator_holder_base_ptr;</span>
+<span id="L183"><span class="lineNum">     183</span>              : </span>
+<span id="L184"><span class="lineNum">     184</span>              : class BOOST_TEST_DECL translator_holder_base {</span>
+<span id="L185"><span class="lineNum">     185</span>              : protected:</span>
+<span id="L186"><span class="lineNum">     186</span>              :     typedef boost::unit_test::const_string const_string;</span>
+<span id="L187"><span class="lineNum">     187</span>              : public:</span>
+<span id="L188"><span class="lineNum">     188</span>              :     // Constructor</span>
+<span id="L189"><span class="lineNum">     189</span>              :     translator_holder_base( translator_holder_base_ptr next, const_string tag )</span>
+<span id="L190"><span class="lineNum">     190</span>              :     : m_next( next )</span>
+<span id="L191"><span class="lineNum">     191</span>              :     , m_tag( std::string() + tag )</span>
+<span id="L192"><span class="lineNum">     192</span>              :     {</span>
+<span id="L193"><span class="lineNum">     193</span>              :     }</span>
+<span id="L194"><span class="lineNum">     194</span>              : </span>
+<span id="L195"><span class="lineNum">     195</span>              :     // Destructor</span>
+<span id="L196"><span class="lineNum">     196</span>              :     virtual     ~translator_holder_base() {}</span>
+<span id="L197"><span class="lineNum">     197</span>              : </span>
+<span id="L198"><span class="lineNum">     198</span>              :     // translator holder interface</span>
+<span id="L199"><span class="lineNum">     199</span>              :     // invokes the function F inside the try/catch guarding against specific exception</span>
+<span id="L200"><span class="lineNum">     200</span>              :     virtual int operator()( boost::function&lt;int ()&gt; const&amp; F ) = 0;</span>
+<span id="L201"><span class="lineNum">     201</span>              : </span>
+<span id="L202"><span class="lineNum">     202</span>              :     // erases specific translator holder from the chain</span>
+<span id="L203"><span class="lineNum">     203</span>              :     translator_holder_base_ptr erase( translator_holder_base_ptr this_, const_string tag )</span>
+<span id="L204"><span class="lineNum">     204</span>              :     {</span>
+<span id="L205"><span class="lineNum">     205</span>              :         if( m_next )</span>
+<span id="L206"><span class="lineNum">     206</span>              :             m_next = m_next-&gt;erase( m_next, tag );</span>
+<span id="L207"><span class="lineNum">     207</span>              : </span>
+<span id="L208"><span class="lineNum">     208</span>              :         return m_tag == tag ? m_next : this_;</span>
+<span id="L209"><span class="lineNum">     209</span>              :     }</span>
+<span id="L210"><span class="lineNum">     210</span>              : #ifndef BOOST_NO_RTTI</span>
+<span id="L211"><span class="lineNum">     211</span>              :     virtual translator_holder_base_ptr erase( translator_holder_base_ptr this_, std::type_info const&amp; ) = 0;</span>
+<span id="L212"><span class="lineNum">     212</span>              :     template&lt;typename ExceptionType&gt;</span>
+<span id="L213"><span class="lineNum">     213</span>              :     translator_holder_base_ptr erase( translator_holder_base_ptr this_, boost::type&lt;ExceptionType&gt;* = 0 )</span>
+<span id="L214"><span class="lineNum">     214</span>              :     {</span>
+<span id="L215"><span class="lineNum">     215</span>              :         if( m_next )</span>
+<span id="L216"><span class="lineNum">     216</span>              :             m_next = m_next-&gt;erase&lt;ExceptionType&gt;( m_next );</span>
+<span id="L217"><span class="lineNum">     217</span>              : </span>
+<span id="L218"><span class="lineNum">     218</span>              :         return erase( this_, typeid(ExceptionType) );</span>
+<span id="L219"><span class="lineNum">     219</span>              :     }</span>
+<span id="L220"><span class="lineNum">     220</span>              : #endif</span>
+<span id="L221"><span class="lineNum">     221</span>              : </span>
+<span id="L222"><span class="lineNum">     222</span>              : protected:</span>
+<span id="L223"><span class="lineNum">     223</span>              :     // Data members</span>
+<span id="L224"><span class="lineNum">     224</span>              :     translator_holder_base_ptr  m_next;</span>
+<span id="L225"><span class="lineNum">     225</span>              :     std::string                 m_tag;</span>
+<span id="L226"><span class="lineNum">     226</span>              : };</span>
+<span id="L227"><span class="lineNum">     227</span>              : </span>
+<span id="L228"><span class="lineNum">     228</span>              : } // namespace detail</span>
+<span id="L229"><span class="lineNum">     229</span>              : </span>
+<span id="L230"><span class="lineNum">     230</span>              : // ************************************************************************** //</span>
+<span id="L231"><span class="lineNum">     231</span>              : /// @class execution_exception</span>
+<span id="L232"><span class="lineNum">     232</span>              : /// @brief This class is used to report any kind of an failure during execution of a monitored function inside of execution_monitor</span>
+<span id="L233"><span class="lineNum">     233</span>              : ///</span>
+<span id="L234"><span class="lineNum">     234</span>              : /// The instance of this class is thrown out of execution_monitor::execute invocation when failure is detected. Regardless of a kind of failure occurred</span>
+<span id="L235"><span class="lineNum">     235</span>              : /// the instance will provide a uniform way to catch and report it.</span>
+<span id="L236"><span class="lineNum">     236</span>              : ///</span>
+<span id="L237"><span class="lineNum">     237</span>              : /// One important design rationale for this class is that we should be ready to work after fatal memory corruptions or out of memory conditions. To facilitate</span>
+<span id="L238"><span class="lineNum">     238</span>              : /// this class never allocates any memory and assumes that strings it refers to are either some constants or live in a some kind of persistent (preallocated) memory.</span>
+<span id="L239"><span class="lineNum">     239</span>              : // ************************************************************************** //</span>
+<span id="L240"><span class="lineNum">     240</span>              : </span>
+<span id="L241"><span class="lineNum">     241</span>              : class BOOST_SYMBOL_VISIBLE execution_exception {</span>
+<span id="L242"><span class="lineNum">     242</span>              :     typedef boost::unit_test::const_string const_string;</span>
+<span id="L243"><span class="lineNum">     243</span>              : public:</span>
+<span id="L244"><span class="lineNum">     244</span>              :     /// These values are sometimes used as program return codes.</span>
+<span id="L245"><span class="lineNum">     245</span>              :     /// The particular values have been chosen to avoid conflicts with</span>
+<span id="L246"><span class="lineNum">     246</span>              :     /// commonly used program return codes: values &lt; 100 are often user</span>
+<span id="L247"><span class="lineNum">     247</span>              :     /// assigned, values &gt; 255 are sometimes used to report system errors.</span>
+<span id="L248"><span class="lineNum">     248</span>              :     /// Gaps in values allow for orderly expansion.</span>
+<span id="L249"><span class="lineNum">     249</span>              :     ///</span>
+<span id="L250"><span class="lineNum">     250</span>              :     /// @note(1) Only uncaught C++ exceptions are treated as errors.</span>
+<span id="L251"><span class="lineNum">     251</span>              :     /// If a function catches a C++ exception, it never reaches</span>
+<span id="L252"><span class="lineNum">     252</span>              :     /// the execution_monitor.</span>
+<span id="L253"><span class="lineNum">     253</span>              :     ///</span>
+<span id="L254"><span class="lineNum">     254</span>              :     /// The implementation decides what is a system_fatal_error and what is</span>
+<span id="L255"><span class="lineNum">     255</span>              :     /// just a system_exception. Fatal errors are so likely to have corrupted</span>
+<span id="L256"><span class="lineNum">     256</span>              :     /// machine state (like a stack overflow or addressing exception) that it</span>
+<span id="L257"><span class="lineNum">     257</span>              :     /// is unreasonable to continue execution.</span>
+<span id="L258"><span class="lineNum">     258</span>              :     ///</span>
+<span id="L259"><span class="lineNum">     259</span>              :     /// @note(2) These errors include Unix signals and Windows structured</span>
+<span id="L260"><span class="lineNum">     260</span>              :     /// exceptions. They are often initiated by hardware traps.</span>
+<span id="L261"><span class="lineNum">     261</span>              :     enum error_code {</span>
+<span id="L262"><span class="lineNum">     262</span>              :         no_error               = 0,   ///&lt; for completeness only; never returned</span>
+<span id="L263"><span class="lineNum">     263</span>              :         user_error             = 200, ///&lt; user reported non-fatal error</span>
+<span id="L264"><span class="lineNum">     264</span>              :         cpp_exception_error    = 205, ///&lt; see note (1) above</span>
+<span id="L265"><span class="lineNum">     265</span>              :         system_error           = 210, ///&lt; see note (2) above</span>
+<span id="L266"><span class="lineNum">     266</span>              :         timeout_error          = 215, ///&lt; only detectable on certain platforms</span>
+<span id="L267"><span class="lineNum">     267</span>              :         user_fatal_error       = 220, ///&lt; user reported fatal error</span>
+<span id="L268"><span class="lineNum">     268</span>              :         system_fatal_error     = 225  ///&lt; see note (2) above</span>
+<span id="L269"><span class="lineNum">     269</span>              :     };</span>
+<span id="L270"><span class="lineNum">     270</span>              : </span>
+<span id="L271"><span class="lineNum">     271</span>              :     /// Simple model for the location of failure in a source code</span>
+<span id="L272"><span class="lineNum">     272</span>              :     struct BOOST_TEST_DECL location {</span>
+<span id="L273"><span class="lineNum">     273</span>              :         explicit    location( char const* file_name = 0, size_t line_num = 0, char const* func = 0 );</span>
+<span id="L274"><span class="lineNum">     274</span>              :         explicit    location( const_string file_name, size_t line_num = 0, char const* func = 0 );</span>
+<span id="L275"><span class="lineNum">     275</span>              : </span>
+<span id="L276"><span class="lineNum">     276</span>              :         const_string    m_file_name;    ///&lt; File name</span>
+<span id="L277"><span class="lineNum">     277</span>              :         size_t          m_line_num;     ///&lt; Line number</span>
+<span id="L278"><span class="lineNum">     278</span>              :         const_string    m_function;     ///&lt; Function name</span>
+<span id="L279"><span class="lineNum">     279</span>              :     };</span>
+<span id="L280"><span class="lineNum">     280</span>              : </span>
+<span id="L281"><span class="lineNum">     281</span>              :     /// @name Constructors</span>
+<span id="L282"><span class="lineNum">     282</span>              : </span>
+<span id="L283"><span class="lineNum">     283</span>              :     /// Constructs instance based on message, location and error code</span>
+<span id="L284"><span class="lineNum">     284</span>              : </span>
+<span id="L285"><span class="lineNum">     285</span>              :     /// @param[in] ec           error code</span>
+<span id="L286"><span class="lineNum">     286</span>              :     /// @param[in] what_msg     error message</span>
+<span id="L287"><span class="lineNum">     287</span>              :     /// @param[in] location     error location</span>
+<span id="L288"><span class="lineNum">     288</span>              :     execution_exception( error_code ec, const_string what_msg, location const&amp; location );</span>
+<span id="L289"><span class="lineNum">     289</span>              : </span>
+<span id="L290"><span class="lineNum">     290</span>              :     /// @name Access methods</span>
+<span id="L291"><span class="lineNum">     291</span>              : </span>
+<span id="L292"><span class="lineNum">     292</span>              :     /// Exception error code</span>
+<span id="L293"><span class="lineNum">     293</span> <span class="tlaUNC">           0 :     error_code      code() const    { return m_error_code; }</span></span>
+<span id="L294"><span class="lineNum">     294</span>              :     /// Exception message</span>
+<span id="L295"><span class="lineNum">     295</span> <span class="tlaUNC">           0 :     const_string    what() const    { return m_what; }</span></span>
+<span id="L296"><span class="lineNum">     296</span>              :     /// Exception location</span>
+<span id="L297"><span class="lineNum">     297</span> <span class="tlaUNC">           0 :     location const&amp; where() const   { return m_location; }</span></span>
+<span id="L298"><span class="lineNum">     298</span>              :     ///@}</span>
+<span id="L299"><span class="lineNum">     299</span>              : </span>
+<span id="L300"><span class="lineNum">     300</span>              : private:</span>
+<span id="L301"><span class="lineNum">     301</span>              :     // Data members</span>
+<span id="L302"><span class="lineNum">     302</span>              :     error_code      m_error_code;</span>
+<span id="L303"><span class="lineNum">     303</span>              :     const_string    m_what;</span>
+<span id="L304"><span class="lineNum">     304</span>              :     location        m_location;</span>
+<span id="L305"><span class="lineNum">     305</span>              : }; // execution_exception</span>
+<span id="L306"><span class="lineNum">     306</span>              : </span>
+<span id="L307"><span class="lineNum">     307</span>              : // ************************************************************************** //</span>
+<span id="L308"><span class="lineNum">     308</span>              : /// @brief Function execution monitor</span>
+<span id="L309"><span class="lineNum">     309</span>              : </span>
+<span id="L310"><span class="lineNum">     310</span>              : /// This class is used to uniformly detect and report an occurrence of several types of signals and exceptions, reducing various</span>
+<span id="L311"><span class="lineNum">     311</span>              : /// errors to a uniform execution_exception that is returned to a caller.</span>
+<span id="L312"><span class="lineNum">     312</span>              : ///</span>
+<span id="L313"><span class="lineNum">     313</span>              : /// The execution_monitor behavior can be customized through a set of public parameters (properties) associated with the execution_monitor instance.</span>
+<span id="L314"><span class="lineNum">     314</span>              : /// All parameters are implemented as public unit_test::readwrite_property data members of the class execution_monitor.</span>
+<span id="L315"><span class="lineNum">     315</span>              : // ************************************************************************** //</span>
+<span id="L316"><span class="lineNum">     316</span>              : </span>
+<span id="L317"><span class="lineNum">     317</span>              : class BOOST_TEST_DECL execution_monitor {</span>
+<span id="L318"><span class="lineNum">     318</span>              :     typedef boost::unit_test::const_string const_string;</span>
+<span id="L319"><span class="lineNum">     319</span>              : public:</span>
+<span id="L320"><span class="lineNum">     320</span>              : </span>
+<span id="L321"><span class="lineNum">     321</span>              :     /// Default constructor initializes all execution monitor properties</span>
+<span id="L322"><span class="lineNum">     322</span>              :     execution_monitor();</span>
+<span id="L323"><span class="lineNum">     323</span>              : </span>
+<span id="L324"><span class="lineNum">     324</span>              :     /// Should monitor catch system errors.</span>
+<span id="L325"><span class="lineNum">     325</span>              :     ///</span>
+<span id="L326"><span class="lineNum">     326</span>              :     /// The @em p_catch_system_errors property is a boolean flag (default value is true) specifying whether or not execution_monitor should trap system</span>
+<span id="L327"><span class="lineNum">     327</span>              :     /// errors/system level exceptions/signals, which would cause program to crash in a regular case (without execution_monitor).</span>
+<span id="L328"><span class="lineNum">     328</span>              :     /// Set this property to false, for example, if you wish to force coredump file creation. The Unit Test Framework provides a</span>
+<span id="L329"><span class="lineNum">     329</span>              :     /// runtime parameter @c \-\-catch_system_errors=yes to alter the behavior in monitored test cases.</span>
+<span id="L330"><span class="lineNum">     330</span>              :     unit_test::readwrite_property&lt;bool&gt; p_catch_system_errors;</span>
+<span id="L331"><span class="lineNum">     331</span>              : </span>
+<span id="L332"><span class="lineNum">     332</span>              :     ///  Should monitor try to attach debugger in case of caught system error.</span>
+<span id="L333"><span class="lineNum">     333</span>              :     ///</span>
+<span id="L334"><span class="lineNum">     334</span>              :     /// The @em p_auto_start_dbg property is a boolean flag (default value is false) specifying whether or not execution_monitor should try to attach debugger</span>
+<span id="L335"><span class="lineNum">     335</span>              :     /// in case system error is caught.</span>
+<span id="L336"><span class="lineNum">     336</span>              :     unit_test::readwrite_property&lt;bool&gt; p_auto_start_dbg;</span>
+<span id="L337"><span class="lineNum">     337</span>              : </span>
+<span id="L338"><span class="lineNum">     338</span>              : </span>
+<span id="L339"><span class="lineNum">     339</span>              :     ///  Specifies the seconds that elapse before a timer_error occurs.</span>
+<span id="L340"><span class="lineNum">     340</span>              :     ///</span>
+<span id="L341"><span class="lineNum">     341</span>              :     /// The @em p_timeout property is an integer timeout (in microseconds) for monitored function execution. Use this parameter to monitor code with possible deadlocks</span>
+<span id="L342"><span class="lineNum">     342</span>              :     /// or infinite loops. This feature is only available for some operating systems (not yet Microsoft Windows).</span>
+<span id="L343"><span class="lineNum">     343</span>              :     unit_test::readwrite_property&lt;unsigned long int&gt;  p_timeout;</span>
+<span id="L344"><span class="lineNum">     344</span>              : </span>
+<span id="L345"><span class="lineNum">     345</span>              :     ///  Should monitor use alternative stack for the signal catching.</span>
+<span id="L346"><span class="lineNum">     346</span>              :     ///</span>
+<span id="L347"><span class="lineNum">     347</span>              :     /// The @em p_use_alt_stack property is a boolean flag (default value is false) specifying whether or not execution_monitor should use an alternative stack</span>
+<span id="L348"><span class="lineNum">     348</span>              :     /// for the sigaction based signal catching. When enabled the signals are delivered to the execution_monitor on a stack different from current execution</span>
+<span id="L349"><span class="lineNum">     349</span>              :     /// stack, which is safer in case if it is corrupted by monitored function. For more details on alternative stack handling see appropriate manuals.</span>
+<span id="L350"><span class="lineNum">     350</span>              :     unit_test::readwrite_property&lt;bool&gt; p_use_alt_stack;</span>
+<span id="L351"><span class="lineNum">     351</span>              : </span>
+<span id="L352"><span class="lineNum">     352</span>              :     /// Should monitor try to detect hardware floating point exceptions (!= 0), and which specific exception to catch.</span>
+<span id="L353"><span class="lineNum">     353</span>              :     ///</span>
+<span id="L354"><span class="lineNum">     354</span>              :     /// The @em p_detect_fp_exceptions property is a boolean flag (default value is false) specifying whether or not execution_monitor should install hardware</span>
+<span id="L355"><span class="lineNum">     355</span>              :     /// traps for the floating point exception on platforms where it's supported.</span>
+<span id="L356"><span class="lineNum">     356</span>              :     unit_test::readwrite_property&lt;unsigned&gt; p_detect_fp_exceptions;</span>
+<span id="L357"><span class="lineNum">     357</span>              : </span>
+<span id="L358"><span class="lineNum">     358</span>              : </span>
+<span id="L359"><span class="lineNum">     359</span>              :     // @name Monitoring entry points</span>
+<span id="L360"><span class="lineNum">     360</span>              : </span>
+<span id="L361"><span class="lineNum">     361</span>              :     /// @brief Execution monitor entry point for functions returning integer value</span>
+<span id="L362"><span class="lineNum">     362</span>              :     ///</span>
+<span id="L363"><span class="lineNum">     363</span>              :     /// This method executes supplied function F inside a try/catch block and also may include other unspecified platform dependent error detection code.</span>
+<span id="L364"><span class="lineNum">     364</span>              :     ///</span>
+<span id="L365"><span class="lineNum">     365</span>              :     /// This method throws an execution_exception on an uncaught C++ exception, a hardware or software signal, trap, or other user exception.</span>
+<span id="L366"><span class="lineNum">     366</span>              :     ///</span>
+<span id="L367"><span class="lineNum">     367</span>              :     /// @note execute() doesn't consider it an error for F to return a non-zero value.</span>
+<span id="L368"><span class="lineNum">     368</span>              :     /// @param[in] F  Function to monitor</span>
+<span id="L369"><span class="lineNum">     369</span>              :     /// @returns  value returned by function call F().</span>
+<span id="L370"><span class="lineNum">     370</span>              :     /// @see vexecute</span>
+<span id="L371"><span class="lineNum">     371</span>              :     int         execute( boost::function&lt;int ()&gt; const&amp; F );</span>
+<span id="L372"><span class="lineNum">     372</span>              : </span>
+<span id="L373"><span class="lineNum">     373</span>              :     /// @brief Execution monitor entry point for functions returning void</span>
+<span id="L374"><span class="lineNum">     374</span>              :     ///</span>
+<span id="L375"><span class="lineNum">     375</span>              :     /// This method is semantically identical to execution_monitor::execute, but doesn't produce any result code.</span>
+<span id="L376"><span class="lineNum">     376</span>              :     /// @param[in] F  Function to monitor</span>
+<span id="L377"><span class="lineNum">     377</span>              :     /// @see execute</span>
+<span id="L378"><span class="lineNum">     378</span>              :     void         vexecute( boost::function&lt;void ()&gt; const&amp; F );</span>
+<span id="L379"><span class="lineNum">     379</span>              :     // @}</span>
+<span id="L380"><span class="lineNum">     380</span>              : </span>
+<span id="L381"><span class="lineNum">     381</span>              :     // @name Exception translator registration</span>
+<span id="L382"><span class="lineNum">     382</span>              : </span>
+<span id="L383"><span class="lineNum">     383</span>              :     /// @brief Registers custom (user supplied) exception translator</span>
+<span id="L384"><span class="lineNum">     384</span>              : </span>
+<span id="L385"><span class="lineNum">     385</span>              :     /// This method template registers a translator for an exception type specified as a first template argument. For example</span>
+<span id="L386"><span class="lineNum">     386</span>              :     /// @code</span>
+<span id="L387"><span class="lineNum">     387</span>              :     ///    void myExceptTr( MyException const&amp; ex ) { /*do something with the exception here*/}</span>
+<span id="L388"><span class="lineNum">     388</span>              :     ///    em.register_exception_translator&lt;MyException&gt;( myExceptTr );</span>
+<span id="L389"><span class="lineNum">     389</span>              :     /// @endcode</span>
+<span id="L390"><span class="lineNum">     390</span>              :     /// The translator should be any unary function/functor object which accepts MyException const&amp;. This can be free standing function</span>
+<span id="L391"><span class="lineNum">     391</span>              :     /// or bound class method. The second argument is an optional string tag you can associate with this translator routine. The only reason</span>
+<span id="L392"><span class="lineNum">     392</span>              :     /// to specify the tag is if you plan to erase the translator eventually. This can be useful in scenario when you reuse the same</span>
+<span id="L393"><span class="lineNum">     393</span>              :     /// execution_monitor instance to monitor different routines and need to register a translator specific to the routine being monitored.</span>
+<span id="L394"><span class="lineNum">     394</span>              :     /// While it is possible to erase the translator based on an exception type it was registered for, tag string provides simpler way of doing this.</span>
+<span id="L395"><span class="lineNum">     395</span>              :     /// @tparam ExceptionType type of the exception we register a translator for</span>
+<span id="L396"><span class="lineNum">     396</span>              :     /// @tparam ExceptionTranslator type of the translator we register for this exception</span>
+<span id="L397"><span class="lineNum">     397</span>              :     /// @param[in] tr         translator function object with the signature &lt;em&gt; void (ExceptionType const&amp;)&lt;/em&gt;</span>
+<span id="L398"><span class="lineNum">     398</span>              :     /// @param[in] tag        tag associated with this translator</span>
+<span id="L399"><span class="lineNum">     399</span>              :     template&lt;typename ExceptionType, typename ExceptionTranslator&gt;</span>
+<span id="L400"><span class="lineNum">     400</span>              :     void        register_exception_translator( ExceptionTranslator const&amp; tr, const_string tag = const_string(), boost::type&lt;ExceptionType&gt;* = 0 );</span>
+<span id="L401"><span class="lineNum">     401</span>              : </span>
+<span id="L402"><span class="lineNum">     402</span>              :     /// @brief Erases custom exception translator based on a tag</span>
+<span id="L403"><span class="lineNum">     403</span>              : </span>
+<span id="L404"><span class="lineNum">     404</span>              :     /// Use the same tag as the one used during translator registration</span>
+<span id="L405"><span class="lineNum">     405</span>              :     /// @param[in] tag  tag associated with translator you wants to erase</span>
+<span id="L406"><span class="lineNum">     406</span>              :     void        erase_exception_translator( const_string tag )</span>
+<span id="L407"><span class="lineNum">     407</span>              :     {</span>
+<span id="L408"><span class="lineNum">     408</span>              :         m_custom_translators = m_custom_translators-&gt;erase( m_custom_translators, tag );</span>
+<span id="L409"><span class="lineNum">     409</span>              :     }</span>
+<span id="L410"><span class="lineNum">     410</span>              : #ifndef BOOST_NO_RTTI</span>
+<span id="L411"><span class="lineNum">     411</span>              :     /// @brief Erases custom exception translator based on an exception type</span>
+<span id="L412"><span class="lineNum">     412</span>              :     ///</span>
+<span id="L413"><span class="lineNum">     413</span>              :     /// tparam ExceptionType Exception type for which you want to erase the translator</span>
+<span id="L414"><span class="lineNum">     414</span>              :     template&lt;typename ExceptionType&gt;</span>
+<span id="L415"><span class="lineNum">     415</span>              :     void        erase_exception_translator( boost::type&lt;ExceptionType&gt;* = 0 )</span>
+<span id="L416"><span class="lineNum">     416</span>              :     {</span>
+<span id="L417"><span class="lineNum">     417</span>              :         m_custom_translators = m_custom_translators-&gt;erase&lt;ExceptionType&gt;( m_custom_translators );</span>
+<span id="L418"><span class="lineNum">     418</span>              :     }</span>
+<span id="L419"><span class="lineNum">     419</span>              :     //@}</span>
+<span id="L420"><span class="lineNum">     420</span>              : #endif</span>
+<span id="L421"><span class="lineNum">     421</span>              : </span>
+<span id="L422"><span class="lineNum">     422</span>              : private:</span>
+<span id="L423"><span class="lineNum">     423</span>              :     // implementation helpers</span>
+<span id="L424"><span class="lineNum">     424</span>              :     int         catch_signals( boost::function&lt;int ()&gt; const&amp; F );</span>
+<span id="L425"><span class="lineNum">     425</span>              : </span>
+<span id="L426"><span class="lineNum">     426</span>              :     // Data members</span>
+<span id="L427"><span class="lineNum">     427</span>              :     detail::translator_holder_base_ptr  m_custom_translators;</span>
+<span id="L428"><span class="lineNum">     428</span>              :     boost::scoped_array&lt;char&gt;           m_alt_stack;</span>
+<span id="L429"><span class="lineNum">     429</span>              : }; // execution_monitor</span>
+<span id="L430"><span class="lineNum">     430</span>              : </span>
+<span id="L431"><span class="lineNum">     431</span>              : // ************************************************************************** //</span>
+<span id="L432"><span class="lineNum">     432</span>              : // **************          detail::translator_holder           ************** //</span>
+<span id="L433"><span class="lineNum">     433</span>              : // ************************************************************************** //</span>
+<span id="L434"><span class="lineNum">     434</span>              : </span>
+<span id="L435"><span class="lineNum">     435</span>              : namespace detail {</span>
+<span id="L436"><span class="lineNum">     436</span>              : </span>
+<span id="L437"><span class="lineNum">     437</span>              : template&lt;typename ExceptionType, typename ExceptionTranslator&gt;</span>
+<span id="L438"><span class="lineNum">     438</span>              : class translator_holder : public translator_holder_base</span>
+<span id="L439"><span class="lineNum">     439</span>              : {</span>
+<span id="L440"><span class="lineNum">     440</span>              : public:</span>
+<span id="L441"><span class="lineNum">     441</span>              :     explicit    translator_holder( ExceptionTranslator const&amp; tr, translator_holder_base_ptr&amp; next, const_string tag = const_string() )</span>
+<span id="L442"><span class="lineNum">     442</span>              :     : translator_holder_base( next, tag ), m_translator( tr ) {}</span>
+<span id="L443"><span class="lineNum">     443</span>              : </span>
+<span id="L444"><span class="lineNum">     444</span>              :     // translator holder interface</span>
+<span id="L445"><span class="lineNum">     445</span>              :     int operator()( boost::function&lt;int ()&gt; const&amp; F ) BOOST_OVERRIDE</span>
+<span id="L446"><span class="lineNum">     446</span>              :     {</span>
+<span id="L447"><span class="lineNum">     447</span>              :         BOOST_TEST_I_TRY {</span>
+<span id="L448"><span class="lineNum">     448</span>              :             return m_next ? (*m_next)( F ) : F();</span>
+<span id="L449"><span class="lineNum">     449</span>              :         }</span>
+<span id="L450"><span class="lineNum">     450</span>              :         BOOST_TEST_I_CATCH( ExceptionType, e ) {</span>
+<span id="L451"><span class="lineNum">     451</span>              :             m_translator( e );</span>
+<span id="L452"><span class="lineNum">     452</span>              :             return boost::exit_exception_failure;</span>
+<span id="L453"><span class="lineNum">     453</span>              :         }</span>
+<span id="L454"><span class="lineNum">     454</span>              :     }</span>
+<span id="L455"><span class="lineNum">     455</span>              : #ifndef BOOST_NO_RTTI</span>
+<span id="L456"><span class="lineNum">     456</span>              :     translator_holder_base_ptr erase( translator_holder_base_ptr this_, std::type_info const&amp; ti ) BOOST_OVERRIDE</span>
+<span id="L457"><span class="lineNum">     457</span>              :     {</span>
+<span id="L458"><span class="lineNum">     458</span>              :         return ti == typeid(ExceptionType) ? m_next : this_;</span>
+<span id="L459"><span class="lineNum">     459</span>              :     }</span>
+<span id="L460"><span class="lineNum">     460</span>              : #endif</span>
+<span id="L461"><span class="lineNum">     461</span>              : </span>
+<span id="L462"><span class="lineNum">     462</span>              : private:</span>
+<span id="L463"><span class="lineNum">     463</span>              :     // Data members</span>
+<span id="L464"><span class="lineNum">     464</span>              :     ExceptionTranslator m_translator;</span>
+<span id="L465"><span class="lineNum">     465</span>              : };</span>
+<span id="L466"><span class="lineNum">     466</span>              : </span>
+<span id="L467"><span class="lineNum">     467</span>              : } // namespace detail</span>
+<span id="L468"><span class="lineNum">     468</span>              : </span>
+<span id="L469"><span class="lineNum">     469</span>              : template&lt;typename ExceptionType, typename ExceptionTranslator&gt;</span>
+<span id="L470"><span class="lineNum">     470</span>              : void</span>
+<span id="L471"><span class="lineNum">     471</span>              : execution_monitor::register_exception_translator( ExceptionTranslator const&amp; tr, const_string tag, boost::type&lt;ExceptionType&gt;* )</span>
+<span id="L472"><span class="lineNum">     472</span>              : {</span>
+<span id="L473"><span class="lineNum">     473</span>              :     m_custom_translators.reset(</span>
+<span id="L474"><span class="lineNum">     474</span>              :         new detail::translator_holder&lt;ExceptionType,ExceptionTranslator&gt;( tr, m_custom_translators, tag ) );</span>
+<span id="L475"><span class="lineNum">     475</span>              : }</span>
+<span id="L476"><span class="lineNum">     476</span>              : </span>
+<span id="L477"><span class="lineNum">     477</span>              : // ************************************************************************** //</span>
+<span id="L478"><span class="lineNum">     478</span>              : /// @class execution_aborted</span>
+<span id="L479"><span class="lineNum">     479</span>              : /// @brief This is a trivial default constructible class. Use it to report graceful abortion of a monitored function execution.</span>
+<span id="L480"><span class="lineNum">     480</span>              : // ************************************************************************** //</span>
+<span id="L481"><span class="lineNum">     481</span>              : </span>
+<span id="L482"><span class="lineNum">     482</span>              : struct BOOST_SYMBOL_VISIBLE execution_aborted {};</span>
+<span id="L483"><span class="lineNum">     483</span>              : </span>
+<span id="L484"><span class="lineNum">     484</span>              : // ************************************************************************** //</span>
+<span id="L485"><span class="lineNum">     485</span>              : // **************                  system_error                ************** //</span>
+<span id="L486"><span class="lineNum">     486</span>              : // ************************************************************************** //</span>
+<span id="L487"><span class="lineNum">     487</span>              : </span>
+<span id="L488"><span class="lineNum">     488</span>              : class system_error {</span>
+<span id="L489"><span class="lineNum">     489</span>              : public:</span>
+<span id="L490"><span class="lineNum">     490</span>              :     // Constructor</span>
+<span id="L491"><span class="lineNum">     491</span>              :     explicit    system_error( char const* exp );</span>
+<span id="L492"><span class="lineNum">     492</span>              : </span>
+<span id="L493"><span class="lineNum">     493</span>              :     long const          p_errno;</span>
+<span id="L494"><span class="lineNum">     494</span>              :     char const* const   p_failed_exp;</span>
+<span id="L495"><span class="lineNum">     495</span>              : };</span>
+<span id="L496"><span class="lineNum">     496</span>              : </span>
+<span id="L497"><span class="lineNum">     497</span>              : //!@internal</span>
+<span id="L498"><span class="lineNum">     498</span>              : #define BOOST_TEST_SYS_ASSERT( cond ) BOOST_TEST_I_ASSRT( cond, ::boost::system_error( BOOST_STRINGIZE( exp ) ) )</span>
+<span id="L499"><span class="lineNum">     499</span>              : </span>
+<span id="L500"><span class="lineNum">     500</span>              : // ************************************************************************** //</span>
+<span id="L501"><span class="lineNum">     501</span>              : // **************Floating point exception management interface ************** //</span>
+<span id="L502"><span class="lineNum">     502</span>              : // ************************************************************************** //</span>
+<span id="L503"><span class="lineNum">     503</span>              : </span>
+<span id="L504"><span class="lineNum">     504</span>              : namespace fpe {</span>
+<span id="L505"><span class="lineNum">     505</span>              : </span>
+<span id="L506"><span class="lineNum">     506</span>              : enum masks {</span>
+<span id="L507"><span class="lineNum">     507</span>              :     BOOST_FPE_OFF       = 0,</span>
+<span id="L508"><span class="lineNum">     508</span>              : </span>
+<span id="L509"><span class="lineNum">     509</span>              : #if defined(BOOST_TEST_FPE_SUPPORT_WITH_SEH__) /* *** */</span>
+<span id="L510"><span class="lineNum">     510</span>              :     BOOST_FPE_DIVBYZERO = EM_ZERODIVIDE,</span>
+<span id="L511"><span class="lineNum">     511</span>              :     BOOST_FPE_INEXACT   = EM_INEXACT,</span>
+<span id="L512"><span class="lineNum">     512</span>              :     BOOST_FPE_INVALID   = EM_INVALID,</span>
+<span id="L513"><span class="lineNum">     513</span>              :     BOOST_FPE_OVERFLOW  = EM_OVERFLOW,</span>
+<span id="L514"><span class="lineNum">     514</span>              :     BOOST_FPE_UNDERFLOW = EM_UNDERFLOW|EM_DENORMAL,</span>
+<span id="L515"><span class="lineNum">     515</span>              : </span>
+<span id="L516"><span class="lineNum">     516</span>              :     BOOST_FPE_ALL       = MCW_EM,</span>
+<span id="L517"><span class="lineNum">     517</span>              : </span>
+<span id="L518"><span class="lineNum">     518</span>              : #elif !defined(BOOST_TEST_FPE_SUPPORT_WITH_GLIBC_EXTENSIONS__)/* *** */</span>
+<span id="L519"><span class="lineNum">     519</span>              :     BOOST_FPE_DIVBYZERO = BOOST_FPE_OFF,</span>
+<span id="L520"><span class="lineNum">     520</span>              :     BOOST_FPE_INEXACT   = BOOST_FPE_OFF,</span>
+<span id="L521"><span class="lineNum">     521</span>              :     BOOST_FPE_INVALID   = BOOST_FPE_OFF,</span>
+<span id="L522"><span class="lineNum">     522</span>              :     BOOST_FPE_OVERFLOW  = BOOST_FPE_OFF,</span>
+<span id="L523"><span class="lineNum">     523</span>              :     BOOST_FPE_UNDERFLOW = BOOST_FPE_OFF,</span>
+<span id="L524"><span class="lineNum">     524</span>              :     BOOST_FPE_ALL       = BOOST_FPE_OFF,</span>
+<span id="L525"><span class="lineNum">     525</span>              : #else /* *** */</span>
+<span id="L526"><span class="lineNum">     526</span>              : </span>
+<span id="L527"><span class="lineNum">     527</span>              : #if defined(FE_DIVBYZERO)</span>
+<span id="L528"><span class="lineNum">     528</span>              :     BOOST_FPE_DIVBYZERO = FE_DIVBYZERO,</span>
+<span id="L529"><span class="lineNum">     529</span>              : #else</span>
+<span id="L530"><span class="lineNum">     530</span>              :     BOOST_FPE_DIVBYZERO = BOOST_FPE_OFF,</span>
+<span id="L531"><span class="lineNum">     531</span>              : #endif</span>
+<span id="L532"><span class="lineNum">     532</span>              : </span>
+<span id="L533"><span class="lineNum">     533</span>              : #if defined(FE_INEXACT)</span>
+<span id="L534"><span class="lineNum">     534</span>              :     BOOST_FPE_INEXACT   = FE_INEXACT,</span>
+<span id="L535"><span class="lineNum">     535</span>              : #else</span>
+<span id="L536"><span class="lineNum">     536</span>              :     BOOST_FPE_INEXACT   = BOOST_FPE_OFF,</span>
+<span id="L537"><span class="lineNum">     537</span>              : #endif</span>
+<span id="L538"><span class="lineNum">     538</span>              : </span>
+<span id="L539"><span class="lineNum">     539</span>              : #if defined(FE_INVALID)</span>
+<span id="L540"><span class="lineNum">     540</span>              :     BOOST_FPE_INVALID   = FE_INVALID,</span>
+<span id="L541"><span class="lineNum">     541</span>              : #else</span>
+<span id="L542"><span class="lineNum">     542</span>              :     BOOST_FPE_INVALID   = BOOST_FPE_OFF,</span>
+<span id="L543"><span class="lineNum">     543</span>              : #endif</span>
+<span id="L544"><span class="lineNum">     544</span>              : </span>
+<span id="L545"><span class="lineNum">     545</span>              : #if defined(FE_OVERFLOW)</span>
+<span id="L546"><span class="lineNum">     546</span>              :     BOOST_FPE_OVERFLOW  = FE_OVERFLOW,</span>
+<span id="L547"><span class="lineNum">     547</span>              : #else</span>
+<span id="L548"><span class="lineNum">     548</span>              :     BOOST_FPE_OVERFLOW  = BOOST_FPE_OFF,</span>
+<span id="L549"><span class="lineNum">     549</span>              : #endif</span>
+<span id="L550"><span class="lineNum">     550</span>              : </span>
+<span id="L551"><span class="lineNum">     551</span>              : #if defined(FE_UNDERFLOW)</span>
+<span id="L552"><span class="lineNum">     552</span>              :     BOOST_FPE_UNDERFLOW = FE_UNDERFLOW,</span>
+<span id="L553"><span class="lineNum">     553</span>              : #else</span>
+<span id="L554"><span class="lineNum">     554</span>              :     BOOST_FPE_UNDERFLOW = BOOST_FPE_OFF,</span>
+<span id="L555"><span class="lineNum">     555</span>              : #endif</span>
+<span id="L556"><span class="lineNum">     556</span>              : </span>
+<span id="L557"><span class="lineNum">     557</span>              : #if defined(FE_ALL_EXCEPT)</span>
+<span id="L558"><span class="lineNum">     558</span>              :     BOOST_FPE_ALL       = FE_ALL_EXCEPT,</span>
+<span id="L559"><span class="lineNum">     559</span>              : #else</span>
+<span id="L560"><span class="lineNum">     560</span>              :     BOOST_FPE_ALL       = BOOST_FPE_OFF,</span>
+<span id="L561"><span class="lineNum">     561</span>              : #endif</span>
+<span id="L562"><span class="lineNum">     562</span>              : </span>
+<span id="L563"><span class="lineNum">     563</span>              : #endif /* *** */</span>
+<span id="L564"><span class="lineNum">     564</span>              :     BOOST_FPE_INV       = BOOST_FPE_ALL+1</span>
+<span id="L565"><span class="lineNum">     565</span>              : };</span>
+<span id="L566"><span class="lineNum">     566</span>              : </span>
+<span id="L567"><span class="lineNum">     567</span>              : //____________________________________________________________________________//</span>
+<span id="L568"><span class="lineNum">     568</span>              : </span>
+<span id="L569"><span class="lineNum">     569</span>              : // return the previous set of enabled exceptions when successful, and BOOST_FPE_INV otherwise</span>
+<span id="L570"><span class="lineNum">     570</span>              : unsigned BOOST_TEST_DECL enable( unsigned mask );</span>
+<span id="L571"><span class="lineNum">     571</span>              : unsigned BOOST_TEST_DECL disable( unsigned mask );</span>
+<span id="L572"><span class="lineNum">     572</span>              : </span>
+<span id="L573"><span class="lineNum">     573</span>              : //____________________________________________________________________________//</span>
+<span id="L574"><span class="lineNum">     574</span>              : </span>
+<span id="L575"><span class="lineNum">     575</span>              : } // namespace fpe</span>
+<span id="L576"><span class="lineNum">     576</span>              : </span>
+<span id="L577"><span class="lineNum">     577</span>              : ///@}</span>
+<span id="L578"><span class="lineNum">     578</span>              : </span>
+<span id="L579"><span class="lineNum">     579</span>              : }  // namespace boost</span>
+<span id="L580"><span class="lineNum">     580</span>              : </span>
+<span id="L581"><span class="lineNum">     581</span>              : </span>
+<span id="L582"><span class="lineNum">     582</span>              : #include &lt;boost/test/detail/enable_warnings.hpp&gt;</span>
+<span id="L583"><span class="lineNum">     583</span>              : </span>
+<span id="L584"><span class="lineNum">     584</span>              : #endif</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

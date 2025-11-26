@@ -1,0 +1,45 @@
+@startuml Array
+
+class Array {
+  - head: ArNode*
+  - len: int
+  - size: int
+  --
+  - extendArray(): void
+  --
+  + Array(size: int)
+  + Array(list: initializer_list<string>)
+  + ~Array()
+  --
+  + getElement(index: int): string
+  + setElement(key: string, index: int): void
+  + deleteElement(index: int): void
+  + addElementAtIndex(key: string, index: int): void
+  + addElementEnd(key: string): void
+  + getLength(): int
+  + getHead(): ArNode*
+  + getSize(): int
+  + isInArray(key: const string&): int
+  + print(): void
+  + writeBinary(filename: const string&): void
+  + readBinary(filename: const string&): void
+  + writeText(filename: const string&): void
+  + readText(filename: const string&): void
+}
+
+struct ArNode {
+  + data: string = ""
+}
+
+Array "1" *-- "*" ArNode : contains
+
+note top of Array
+  Динамический массив строк
+  с автоматическим расширением
+end note
+
+note right of ArNode
+  Узел массива
+  Хранит строку данных
+end note
+@enduml

@@ -1,0 +1,47 @@
+@startuml Stack
+
+class Stack {
+  - head: SNode*
+  - size: int
+  - MAX_SIZE: int = 10
+  --
+  - createSNode(key: string): SNode*
+  --
+  + Stack()
+  + Stack(list: initializer_list<string>)
+  --
+  + push(data: string): void
+  + pop(): string
+  + isEmpty(): bool
+  + getSize(): int
+  + writeBinary(filename: const string&): void
+  + readBinary(filename: const string&): void
+  + writeText(filename: const string&): void
+  + readText(filename: const string&): void
+  + print(): void
+}
+
+struct SNode {
+  + key: string
+  + next: SNode*
+}
+
+Stack "1" *-- "*" SNode : contains
+SNode "0..1" --o "0..1" SNode : next
+
+note right of Stack
+  Стек на односвязном списке
+  - LIFO (Last-In-First-Out)
+  - Ограничение размера: MAX_SIZE = 10
+  - Ручное управление памятью
+  - Сериализация в бинарный и текстовый форматы
+  - Поддержка списка инициализации
+end note
+
+note bottom of SNode
+  Узел стека
+  - key: строковые данные
+  - next: указатель на следующий узел
+end note
+
+@enduml

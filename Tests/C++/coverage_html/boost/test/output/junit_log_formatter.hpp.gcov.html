@@ -1,0 +1,244 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - boost/test/output/junit_log_formatter.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../../index.html" title="Click to go to top-level">top level</a> - <a href="index.html" title="Click to go to directory boost/test/output">boost/test/output</a> - junit_log_formatter.hpp<span style="font-size: 80%;"> (source / <a href="junit_log_formatter.hpp.func-c.html" title="Click to go to function table">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryLo">40.7&nbsp;%</td>
+            <td class="headerCovTableEntry">27</td>
+            <td class="headerCovTableEntry">11</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2025-11-26 15:00:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryLo">50.0&nbsp;%</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">3</td>
+          </tr>
+                  <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : //  (C) Copyright 2016 Raffi Enficiaud.</span>
+<span id="L2"><span class="lineNum">       2</span>              : //  Distributed under the Boost Software License, Version 1.0.</span>
+<span id="L3"><span class="lineNum">       3</span>              : //  (See accompanying file LICENSE_1_0.txt or copy at</span>
+<span id="L4"><span class="lineNum">       4</span>              : //  http://www.boost.org/LICENSE_1_0.txt)</span>
+<span id="L5"><span class="lineNum">       5</span>              : </span>
+<span id="L6"><span class="lineNum">       6</span>              : //  See http://www.boost.org/libs/test for the library home page.</span>
+<span id="L7"><span class="lineNum">       7</span>              : //</span>
+<span id="L8"><span class="lineNum">       8</span>              : ///@file</span>
+<span id="L9"><span class="lineNum">       9</span>              : ///@brief Contains the definition of the Junit log formatter (OF_JUNIT)</span>
+<span id="L10"><span class="lineNum">      10</span>              : // ***************************************************************************</span>
+<span id="L11"><span class="lineNum">      11</span>              : </span>
+<span id="L12"><span class="lineNum">      12</span>              : #ifndef BOOST_TEST_JUNIT_LOG_FORMATTER__</span>
+<span id="L13"><span class="lineNum">      13</span>              : #define BOOST_TEST_JUNIT_LOG_FORMATTER__</span>
+<span id="L14"><span class="lineNum">      14</span>              : </span>
+<span id="L15"><span class="lineNum">      15</span>              : // Boost.Test</span>
+<span id="L16"><span class="lineNum">      16</span>              : #include &lt;boost/test/detail/global_typedef.hpp&gt;</span>
+<span id="L17"><span class="lineNum">      17</span>              : #include &lt;boost/test/unit_test_log_formatter.hpp&gt;</span>
+<span id="L18"><span class="lineNum">      18</span>              : #include &lt;boost/test/tree/test_unit.hpp&gt;</span>
+<span id="L19"><span class="lineNum">      19</span>              : </span>
+<span id="L20"><span class="lineNum">      20</span>              : //#include &lt;boost/test/results_collector.hpp&gt;</span>
+<span id="L21"><span class="lineNum">      21</span>              : </span>
+<span id="L22"><span class="lineNum">      22</span>              : // STL</span>
+<span id="L23"><span class="lineNum">      23</span>              : #include &lt;cstddef&gt; // std::size_t</span>
+<span id="L24"><span class="lineNum">      24</span>              : #include &lt;map&gt;</span>
+<span id="L25"><span class="lineNum">      25</span>              : #include &lt;list&gt;</span>
+<span id="L26"><span class="lineNum">      26</span>              : </span>
+<span id="L27"><span class="lineNum">      27</span>              : #include &lt;boost/test/detail/suppress_warnings.hpp&gt;</span>
+<span id="L28"><span class="lineNum">      28</span>              : </span>
+<span id="L29"><span class="lineNum">      29</span>              : //____________________________________________________________________________//</span>
+<span id="L30"><span class="lineNum">      30</span>              : </span>
+<span id="L31"><span class="lineNum">      31</span>              : namespace boost {</span>
+<span id="L32"><span class="lineNum">      32</span>              : namespace unit_test {</span>
+<span id="L33"><span class="lineNum">      33</span>              : namespace output {</span>
+<span id="L34"><span class="lineNum">      34</span>              : </span>
+<span id="L35"><span class="lineNum">      35</span>              : </span>
+<span id="L36"><span class="lineNum">      36</span>              :   namespace junit_impl {</span>
+<span id="L37"><span class="lineNum">      37</span>              : </span>
+<span id="L38"><span class="lineNum">      38</span>              :     // helper for the JUnit logger</span>
+<span id="L39"><span class="lineNum">      39</span>              :     struct junit_log_helper</span>
+<span id="L40"><span class="lineNum">      40</span>              :     {</span>
+<span id="L41"><span class="lineNum">      41</span>              :       struct assertion_entry {</span>
+<span id="L42"><span class="lineNum">      42</span>              : </span>
+<span id="L43"><span class="lineNum">      43</span>              :         enum log_entry_t {</span>
+<span id="L44"><span class="lineNum">      44</span>              :           log_entry_info,</span>
+<span id="L45"><span class="lineNum">      45</span>              :           log_entry_error,</span>
+<span id="L46"><span class="lineNum">      46</span>              :           log_entry_failure</span>
+<span id="L47"><span class="lineNum">      47</span>              :         };</span>
+<span id="L48"><span class="lineNum">      48</span>              : </span>
+<span id="L49"><span class="lineNum">      49</span> <span class="tlaUNC">           0 :         assertion_entry() : sealed(false)</span></span>
+<span id="L50"><span class="lineNum">      50</span> <span class="tlaUNC">           0 :         {}</span></span>
+<span id="L51"><span class="lineNum">      51</span>              : </span>
+<span id="L52"><span class="lineNum">      52</span>              :         std::string logentry_message; // the message associated to the JUnit error/entry</span>
+<span id="L53"><span class="lineNum">      53</span>              :         std::string logentry_type; // the one that will get expanded in the final junit (failure, error)</span>
+<span id="L54"><span class="lineNum">      54</span>              :         std::string output;        // additional information/message generated by the assertion</span>
+<span id="L55"><span class="lineNum">      55</span>              : </span>
+<span id="L56"><span class="lineNum">      56</span>              :         log_entry_t log_entry;     // the type associated to the assertion (or error)</span>
+<span id="L57"><span class="lineNum">      57</span>              : </span>
+<span id="L58"><span class="lineNum">      58</span>              :         bool sealed;               // indicates if the entry can accept additional information</span>
+<span id="L59"><span class="lineNum">      59</span>              :       };</span>
+<span id="L60"><span class="lineNum">      60</span>              : </span>
+<span id="L61"><span class="lineNum">      61</span>              :       std::list&lt;std::string&gt; system_out;      // sysout: additional information</span>
+<span id="L62"><span class="lineNum">      62</span>              :       std::list&lt;std::string&gt; system_err;      // syserr: additional information</span>
+<span id="L63"><span class="lineNum">      63</span>              :       std::string skipping_reason;</span>
+<span id="L64"><span class="lineNum">      64</span>              : </span>
+<span id="L65"><span class="lineNum">      65</span>              :       // list of failure, errors and messages (assertions message and the full log)</span>
+<span id="L66"><span class="lineNum">      66</span>              :       std::vector&lt; assertion_entry &gt; assertion_entries;</span>
+<span id="L67"><span class="lineNum">      67</span>              : </span>
+<span id="L68"><span class="lineNum">      68</span>              :       bool skipping;</span>
+<span id="L69"><span class="lineNum">      69</span>              : </span>
+<span id="L70"><span class="lineNum">      70</span> <span class="tlaGNC">           1 :       junit_log_helper(): skipping(false)</span></span>
+<span id="L71"><span class="lineNum">      71</span> <span class="tlaGNC">           1 :       {}</span></span>
+<span id="L72"><span class="lineNum">      72</span>              : </span>
+<span id="L73"><span class="lineNum">      73</span> <span class="tlaUNC">           0 :       void clear() {</span></span>
+<span id="L74"><span class="lineNum">      74</span> <span class="tlaUNC">           0 :           assertion_entries.clear();</span></span>
+<span id="L75"><span class="lineNum">      75</span> <span class="tlaUNC">           0 :           system_out.clear();</span></span>
+<span id="L76"><span class="lineNum">      76</span> <span class="tlaUNC">           0 :           system_err.clear();</span></span>
+<span id="L77"><span class="lineNum">      77</span> <span class="tlaUNC">           0 :           skipping_reason.clear();</span></span>
+<span id="L78"><span class="lineNum">      78</span> <span class="tlaUNC">           0 :           skipping = false;</span></span>
+<span id="L79"><span class="lineNum">      79</span> <span class="tlaUNC">           0 :       }</span></span>
+<span id="L80"><span class="lineNum">      80</span>              : </span>
+<span id="L81"><span class="lineNum">      81</span>              :     };</span>
+<span id="L82"><span class="lineNum">      82</span>              :   }</span>
+<span id="L83"><span class="lineNum">      83</span>              : </span>
+<span id="L84"><span class="lineNum">      84</span>              : // ************************************************************************** //</span>
+<span id="L85"><span class="lineNum">      85</span>              : // **************               junit_log_formatter              ************** //</span>
+<span id="L86"><span class="lineNum">      86</span>              : // ************************************************************************** //</span>
+<span id="L87"><span class="lineNum">      87</span>              : </span>
+<span id="L88"><span class="lineNum">      88</span>              : /// JUnit logger class</span>
+<span id="L89"><span class="lineNum">      89</span>              : class junit_log_formatter : public unit_test_log_formatter {</span>
+<span id="L90"><span class="lineNum">      90</span>              : public:</span>
+<span id="L91"><span class="lineNum">      91</span>              : </span>
+<span id="L92"><span class="lineNum">      92</span> <span class="tlaGNC">           1 :     junit_log_formatter() : m_display_build_info(false)</span></span>
+<span id="L93"><span class="lineNum">      93</span>              :     {</span>
+<span id="L94"><span class="lineNum">      94</span>              :         // we log everything from the logger singleton point of view</span>
+<span id="L95"><span class="lineNum">      95</span>              :         // because we need to know about all the messages/commands going to the logger</span>
+<span id="L96"><span class="lineNum">      96</span>              :         // we decide what we put inside the logs internally</span>
+<span id="L97"><span class="lineNum">      97</span> <span class="tlaGNC">           1 :         this-&gt;m_log_level = log_successful_tests;</span></span>
+<span id="L98"><span class="lineNum">      98</span> <span class="tlaGNC">           1 :         m_log_level_internal = log_messages;</span></span>
+<span id="L99"><span class="lineNum">      99</span> <span class="tlaGNC">           1 :     }</span></span>
+<span id="L100"><span class="lineNum">     100</span>              : </span>
+<span id="L101"><span class="lineNum">     101</span>              :     // Formatter interface</span>
+<span id="L102"><span class="lineNum">     102</span>              :     void    log_start( std::ostream&amp;, counter_t test_cases_amount ) BOOST_OVERRIDE;</span>
+<span id="L103"><span class="lineNum">     103</span>              :     void    log_finish( std::ostream&amp; ) BOOST_OVERRIDE;</span>
+<span id="L104"><span class="lineNum">     104</span>              :     void    log_build_info( std::ostream&amp;, bool ) BOOST_OVERRIDE;</span>
+<span id="L105"><span class="lineNum">     105</span>              : </span>
+<span id="L106"><span class="lineNum">     106</span>              :     void    test_unit_start( std::ostream&amp;, test_unit const&amp; tu ) BOOST_OVERRIDE;</span>
+<span id="L107"><span class="lineNum">     107</span>              :     void    test_unit_finish( std::ostream&amp;, test_unit const&amp; tu, unsigned long elapsed ) BOOST_OVERRIDE;</span>
+<span id="L108"><span class="lineNum">     108</span>              :     void    test_unit_skipped( std::ostream&amp;, test_unit const&amp; tu, const_string reason ) BOOST_OVERRIDE;</span>
+<span id="L109"><span class="lineNum">     109</span>              :     void    test_unit_aborted( std::ostream&amp; os, test_unit const&amp; tu ) BOOST_OVERRIDE;</span>
+<span id="L110"><span class="lineNum">     110</span>              :     void    test_unit_timed_out( std::ostream&amp; os, test_unit const&amp; tu) BOOST_OVERRIDE;</span>
+<span id="L111"><span class="lineNum">     111</span>              : </span>
+<span id="L112"><span class="lineNum">     112</span>              :     void    log_exception_start( std::ostream&amp;, log_checkpoint_data const&amp;, execution_exception const&amp; ex ) BOOST_OVERRIDE;</span>
+<span id="L113"><span class="lineNum">     113</span>              :     void    log_exception_finish( std::ostream&amp; ) BOOST_OVERRIDE;</span>
+<span id="L114"><span class="lineNum">     114</span>              : </span>
+<span id="L115"><span class="lineNum">     115</span>              :     void    log_entry_start( std::ostream&amp;, log_entry_data const&amp;, log_entry_types let ) BOOST_OVERRIDE;</span>
+<span id="L116"><span class="lineNum">     116</span>              : </span>
+<span id="L117"><span class="lineNum">     117</span>              :     using   unit_test_log_formatter::log_entry_value; // bring base class functions into overload set</span>
+<span id="L118"><span class="lineNum">     118</span>              :     void    log_entry_value( std::ostream&amp;, const_string value ) BOOST_OVERRIDE;</span>
+<span id="L119"><span class="lineNum">     119</span>              :     void    log_entry_finish( std::ostream&amp; ) BOOST_OVERRIDE;</span>
+<span id="L120"><span class="lineNum">     120</span>              : </span>
+<span id="L121"><span class="lineNum">     121</span>              :     void    entry_context_start( std::ostream&amp;, log_level ) BOOST_OVERRIDE;</span>
+<span id="L122"><span class="lineNum">     122</span>              :     void    log_entry_context( std::ostream&amp;, log_level, const_string ) BOOST_OVERRIDE;</span>
+<span id="L123"><span class="lineNum">     123</span>              :     void    entry_context_finish( std::ostream&amp;, log_level ) BOOST_OVERRIDE;</span>
+<span id="L124"><span class="lineNum">     124</span>              : </span>
+<span id="L125"><span class="lineNum">     125</span>              :     //! Discards changes in the log level</span>
+<span id="L126"><span class="lineNum">     126</span> <span class="tlaGNC">           2 :     void        set_log_level(log_level ll) BOOST_OVERRIDE</span></span>
+<span id="L127"><span class="lineNum">     127</span>              :     {</span>
+<span id="L128"><span class="lineNum">     128</span> <span class="tlaGNC">           2 :         if(ll &gt; log_successful_tests &amp;&amp; ll &lt; log_messages)</span></span>
+<span id="L129"><span class="lineNum">     129</span> <span class="tlaUNC">           0 :             ll = log_successful_tests;</span></span>
+<span id="L130"><span class="lineNum">     130</span> <span class="tlaGNC">           2 :         else if (ll &gt; log_all_errors)</span></span>
+<span id="L131"><span class="lineNum">     131</span> <span class="tlaUNC">           0 :             ll = log_all_errors;</span></span>
+<span id="L132"><span class="lineNum">     132</span>              : </span>
+<span id="L133"><span class="lineNum">     133</span> <span class="tlaGNC">           2 :         this-&gt;m_log_level_internal = ll;</span></span>
+<span id="L134"><span class="lineNum">     134</span> <span class="tlaGNC">           2 :     }</span></span>
+<span id="L135"><span class="lineNum">     135</span>              : </span>
+<span id="L136"><span class="lineNum">     136</span>              :     //! Instead of a regular stream, returns a file name corresponding to</span>
+<span id="L137"><span class="lineNum">     137</span>              :     //! the current master test suite. If the file already exists, adds an index</span>
+<span id="L138"><span class="lineNum">     138</span>              :     //! to it.</span>
+<span id="L139"><span class="lineNum">     139</span>              :     std::string  get_default_stream_description() const BOOST_OVERRIDE;</span>
+<span id="L140"><span class="lineNum">     140</span>              : </span>
+<span id="L141"><span class="lineNum">     141</span>              : </span>
+<span id="L142"><span class="lineNum">     142</span>              : private:</span>
+<span id="L143"><span class="lineNum">     143</span>              :     typedef std::map&lt;test_unit_id, junit_impl::junit_log_helper&gt; map_trace_t;</span>
+<span id="L144"><span class="lineNum">     144</span>              :     map_trace_t map_tests;</span>
+<span id="L145"><span class="lineNum">     145</span>              :     junit_impl::junit_log_helper runner_log_entry;</span>
+<span id="L146"><span class="lineNum">     146</span>              : </span>
+<span id="L147"><span class="lineNum">     147</span> <span class="tlaUNC">           0 :     junit_impl::junit_log_helper&amp; get_current_log_entry() {</span></span>
+<span id="L148"><span class="lineNum">     148</span> <span class="tlaUNC">           0 :         if(list_path_to_root.empty())</span></span>
+<span id="L149"><span class="lineNum">     149</span> <span class="tlaUNC">           0 :             return runner_log_entry;</span></span>
+<span id="L150"><span class="lineNum">     150</span> <span class="tlaUNC">           0 :         map_trace_t::iterator it = map_tests.find(list_path_to_root.back());</span></span>
+<span id="L151"><span class="lineNum">     151</span> <span class="tlaUNC">           0 :         return (it == map_tests.end() ? runner_log_entry : it-&gt;second);</span></span>
+<span id="L152"><span class="lineNum">     152</span>              :     }</span>
+<span id="L153"><span class="lineNum">     153</span>              : </span>
+<span id="L154"><span class="lineNum">     154</span>              :     std::list&lt;test_unit_id&gt; list_path_to_root;</span>
+<span id="L155"><span class="lineNum">     155</span>              :     bool m_display_build_info;</span>
+<span id="L156"><span class="lineNum">     156</span>              :     bool m_is_last_assertion_or_error; // true if failure, false if error</span>
+<span id="L157"><span class="lineNum">     157</span>              : </span>
+<span id="L158"><span class="lineNum">     158</span>              :     log_level m_log_level_internal;</span>
+<span id="L159"><span class="lineNum">     159</span>              :     friend class junit_result_helper;</span>
+<span id="L160"><span class="lineNum">     160</span>              : };</span>
+<span id="L161"><span class="lineNum">     161</span>              : </span>
+<span id="L162"><span class="lineNum">     162</span>              : } // namespace output</span>
+<span id="L163"><span class="lineNum">     163</span>              : } // namespace unit_test</span>
+<span id="L164"><span class="lineNum">     164</span>              : } // namespace boost</span>
+<span id="L165"><span class="lineNum">     165</span>              : </span>
+<span id="L166"><span class="lineNum">     166</span>              : #include &lt;boost/test/detail/enable_warnings.hpp&gt;</span>
+<span id="L167"><span class="lineNum">     167</span>              : </span>
+<span id="L168"><span class="lineNum">     168</span>              : #endif // BOOST_TEST_JUNIT_LOG_FORMATTER__</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

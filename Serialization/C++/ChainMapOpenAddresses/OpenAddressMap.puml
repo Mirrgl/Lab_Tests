@@ -1,0 +1,67 @@
+@startuml OpenAddress
+
+class OpenAddressingMap {
+  - table: OAMapNode*
+  - capacity: size_t
+  - size: size_t
+  --
+  - hashFunction(key: const string&): size_t
+  - linearProbing(index: size_t, attempt: size_t, capacity: size_t): size_t
+  - findIndex(key: const string&, forInsert: bool = false): size_t
+  - rehash(): void
+  --
+  + OpenAddressingMap(initial_capacity: size_t = 16)
+  + ~OpenAddressingMap()
+  + add(key: const string&, data: int): void
+  + find(key: const string&): int*
+  + contains(key: const string&): bool
+  + remove(key: const string&): bool
+  + update(key: const string&, new_data: int): bool
+  + getSize(): size_t
+  + getCapacity(): size_t
+  + printContents(): void
+  + writeBinary(filename: const string&): void
+  + readBinary(filename: const string&): void
+  + writeText(filename: const string&): void
+  + readText(filename: const string&): void
+}
+
+struct OAMapNode {
+  + key: string
+  + data: int
+  + state: CellState
+  + OAMapNode()
+}
+
+enum CellState {
+  EMPTY
+  FULL
+  DELETED
+}
+
+OpenAddressingMap "1" *-- "*" OAMapNode : contains
+OAMapNode .. CellState
+
+note right of OpenAddressingMap
+  Хеш-таблица с открытой адресацией
+  - Линейное пробирование для разрешения коллизий
+  - Автоматическое рехеширование при 75% заполнении
+  - Три состояния ячеек: EMPTY, FULL, DELETED
+  - Поддержка сериализации
+end note
+
+note right of OAMapNode
+  Узел хеш-таблицы
+  - key: строковый ключ
+  - data: целочисленное значение
+  - state: состояние ячейки
+end note
+
+note right of CellState
+  Состояния ячеек:
+  - EMPTY: пустая
+  - FULL: занятая
+  - DELETED: удаленная (ленивое удаление)
+end note
+
+@enduml
